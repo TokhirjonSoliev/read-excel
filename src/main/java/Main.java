@@ -10,10 +10,21 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        List<EmployeeSalary> salaryList = new ArrayList<>();
+    }
+
+    public static List<EmployeesItem> readFileContent(String fileName) {
+        String[] fileExtension = fileName.trim().split("\\.");
+        if (fileExtension.length != 2){
+            throw new RuntimeException("Something wrong");
+        }
+        if (!fileExtension[1].equals("xls") && !fileExtension[1].equals("xlsx")){
+            throw new RuntimeException("File extension doesn't suit conditions!");
+        }
+
+        List<EmployeesItem> salaryList = new ArrayList<>();
         Set<String> set = new HashSet<>();
         try {
-            FileInputStream file = new FileInputStream("src/main/resources/salary.xlsx");
+            FileInputStream file = new FileInputStream("src/main/resources/" + fileName);
             Workbook workbook = new XSSFWorkbook(file);
             Sheet sheet = workbook.getSheetAt(0);
             int skip = 0;
@@ -53,20 +64,22 @@ public class Main {
                     throw new RuntimeException("Salary in the list is higher than max!");
                 }
                 int amount = Integer.parseInt(salaryAmount);
-                salaryList.add(new EmployeeSalary(fCV1, fCV2, amount));
+                salaryList.add(new EmployeesItem(fCV1, fCV2, amount));
             }
-            for (EmployeeSalary employeeSalary : salaryList) {
-                set.add(employeeSalary.getAccountNumberCard());
+            for (EmployeesItem employeesItem : salaryList) {
+                set.add(employeesItem.getAccountNumberCard());
             }
             if (salaryList.size() != set.size()) {
                 throw new RuntimeException("Someone's accountNumberCard used more than one!");
             } else {
-                for (EmployeeSalary employeeSalary : salaryList) {
-                    System.out.println(employeeSalary);
+                for (EmployeesItem employeesItem : salaryList) {
+                    System.out.println(employeesItem);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return salaryList;
     }
 }
